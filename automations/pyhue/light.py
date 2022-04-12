@@ -1,7 +1,6 @@
 import json
-import patched_request as requests
+import automations.pyhue.patched_request as requests
 import environment as env
-from types import SimpleNamespace
 
 class Light:
 	def __init__(self, bridge, data):
@@ -35,15 +34,15 @@ class Light:
 		return self.data['id']
 
 	# [153, 500], 500 is more red, 153 more blue
-	def setColorTemperature(temp):
+	def setColorTemperature(self, temp):
 		payload = {'color_temperature': {'mirek': temp}}
 		return self.sendData(payload)
 
-	def setColorXY(x, y):
+	def setColorXY(self, x, y):
 		payload = {'color': {'xy' : {'x': x, 'y': y}}}
 		return self.sendData(payload)
 
-	def setColorGamut(r_x, r_y, g_x, g_y, b_x, b_y):
+	def setColorGamut(self, r_x, r_y, g_x, g_y, b_x, b_y):
 		payload = {'gamut' : 
 			{	
 				{'red' : {'x' : r_x, 'y': r_y}},

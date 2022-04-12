@@ -1,11 +1,12 @@
-import environment as env
+# import automations.pyhue.environment as env
 import json
-import patched_request as requests
+import automations.pyhue.patched_request as requests
+import environment as env
+from automations.pyhue.light import Light
 
-from light import Light
-
-class Bridge():
-	def __init__(self):
+class BridgeController():
+	def __init__(self, master_controller):
+		self.master_controller = master_controller
 		self.lights = []
 		self.getLightData()
 		
@@ -29,10 +30,5 @@ class Bridge():
 			else:
 				self.lights[i] = light  
 
-		# for light in self.lights:
-		# 	light.setDuration(10000)
-		# 	response = light.setDimming(20)
-		# 	print(response)
 
-# bridge = Bridge()
-# bridge.getLightData()
+

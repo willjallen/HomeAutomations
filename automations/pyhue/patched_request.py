@@ -5,11 +5,12 @@ import json
 from urllib3.util import connection
 from urllib3.util import ssl_match_hostname
 
+import warnings
+
 _orig_create_connection = connection.create_connection
 
 def custom_resolver(host):
-	print(host)
-	if host == 'ecb5fafffe9bddec':
+	if host == env.hue_bridge_id:
 		return '192.168.0.44'
 	else:
 		return host
@@ -33,8 +34,12 @@ verify = False
 
 
 def get(url):
-	return requests.get(url=url, headers=headers, verify=verify)
+	with warnings.catch_warnings():
+		warnings.simplefilter('ignore')
+		return requests.get(url=url, headers=headers, verify=verify)
 
 def put(url, json):
-	return requests.put(url=url, headers=headers, json=json, verify=verify) 		
+	with warnings.catch_warnings():
+		warnings.simplefilter('ignore')
+		return requests.put(url=url, headers=headers, json=json, verify=verify) 		
 
