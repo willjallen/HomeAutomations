@@ -15,7 +15,9 @@ import datetime
 # For exmaple if sunrise is at 8 am and sets at 7 pm
 # I don't really want all the lights to turn off at 7 pm, so I should be able to add some length to the tails
 
-
+second = 1
+minute = 60
+hour = 60*minute
 
 	
 class CircadianLightsController():
@@ -30,7 +32,8 @@ class CircadianLightsController():
 		# Schedule
 		self.schedule = Schedule()
 
-
+		self.sleep_time = 8.5 * hour
+		self.wind_down_time = 45 * minute
 
 
 
@@ -40,13 +43,17 @@ class CircadianLightsController():
 	# Generate a set of commands to fade the lights according to the sunset and sunrise times
 	#https://brandon-lighting.com/wp-content/uploads/2018/04/Color-Temperature.jpg
 	# mirek: (integer – minimum: 153(blue) – maximum: 500(red))
-	# sunrise: mirek: 450, brightness: 0
+	# sunrise: mirek: 450, brightness: 1
 	# post sunrise: mirek: 400, brightness: 100 (t+15 min)
-	# early morning: mirek: 300, (noon-sunrise)/2 
-	# noon: mirek: 250 (sunset - sunrise)/2
-	# mid afternoon
-	# sunset
-	# post sunset(red)
+	# early morning: mirek: 300, brightness: 100 (t+30 min) 
+	# midday: mirek: 250 (sunset - sunrise)/2
+	# mid afternoon: mirek: 300, brightness: 100 (sunset-midday)/2
+	# sunset: mirek: 450, brightness: 80
+	# post sunset: mirek: 500, brightness: 70 (t+30 min) 
+	# night(red): red, brightness: 70 (11:59 pm - (hours_of_sleep - sunrise)) - 45 min
+	# sleep indicator sleep(flash blue, then red) (t+15 min) brightness: 60
+	# sleep indicator sleep(flash blue, then red) (t+15 min) brightness: 40
+	# sleep indicator sleep(flash blue, then red) (t+15 min) brightness: 20
 
 	# Early morning
 	def generate_schedule(self):
@@ -55,20 +62,55 @@ class CircadianLightsController():
 		local_time = time_utils.get_local_time()
 		YMD_str = str(local_time.year) + '-' + str(local_time.month) + '-' + str(local_time.day)
 
-		self.weather_controller.retrieve_astronomy()
+		# self.weather_controller.retrieve_astronomy()
 		
 		# In UTC seconds
-		self.sunrinse_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
+		sunrinse_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
 			self.weather_controller.astronomy_json['sunrise']).timestamp()
 		
 		# In UTC seconds
-		self.sunset_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
+		sunset_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
 			self.weather_controller.astronomy_json['sunset']).timestamp()
 
+		print(sunrinse_time)
+		print(sunset_time)
+
+		midday_time = sunrinse_time + (sunset_time - sunrinse_time)/2
 
 
-		self.noon_time = sunrinse_time + (sunset_time - sunrinse_time)/2
+		post_sunrise_time = sunrinse_time + (15 * minute)
+		
+		early_morning_time = sunrinse_time + (midday_time - sunrinse_time)/2
 
+		mid_afternoon_time = midday_time + (sunset_time - midday_time)/2
+
+		post_sunset_time = sunset_time + (minute * 30)
+
+		# tomorrow's sunrise (today's sunrise + 24 hour)
+		# - sleep_time hour - 45 min
+		#
+		night_time = (sunrinse_time + (24 * hour)) - self.sleep_time - self.wind_down_time
+		
+		first_sleep_indicator_time = night_time + (self.wind_down_time/3)
+
+		second_sleep_indicator_time = first_sleep_indicator_time + (self.wind_down_time/3)
+
+		third_sleep_indicator_time = second_sleep_indicator_time + (self.wind_down_time/3)
+
+		lights_out = third_sleep_indicator_time + (5 * minute)
+
+		print('Sunrise: ' + (time_utils.UTC_timestamp_to_local_datetime(sunrinse_time)).strftime('%I:%M %p'))
+		print('Post sunrise: ' + (time_utils.UTC_timestamp_to_local_datetime(post_sunrise_time)).strftime('%I:%M %p'))
+		print('Early morning: ' + (time_utils.UTC_timestamp_to_local_datetime(early_morning_time)).strftime('%I:%M %p'))
+		print('Mid day: ' + (time_utils.UTC_timestamp_to_local_datetime(midday_time)).strftime('%I:%M %p'))
+		print('Mid afternoon: ' + (time_utils.UTC_timestamp_to_local_datetime(mid_afternoon_time)).strftime('%I:%M %p'))
+		print('Sunset: ' + (time_utils.UTC_timestamp_to_local_datetime(sunset_time)).strftime('%I:%M %p'))
+		print('Post sunset: ' + (time_utils.UTC_timestamp_to_local_datetime(post_sunset_time)).strftime('%I:%M %p'))
+		print('Nighttime: ' + (time_utils.UTC_timestamp_to_local_datetime(night_time)).strftime('%I:%M %p'))
+		print('First sleep ind.: ' + (time_utils.UTC_timestamp_to_local_datetime(first_sleep_indicator_time)).strftime('%I:%M %p'))
+		print('Second sleep indc.: ' + (time_utils.UTC_timestamp_to_local_datetime(second_sleep_indicator_time)).strftime('%I:%M %p'))
+		print('Third sleep indc.: ' + (time_utils.UTC_timestamp_to_local_datetime(third_sleep_indicator_time)).strftime('%I:%M %p'))
+		print('Lights out: ' + (time_utils.UTC_timestamp_to_local_datetime(lights_out)).strftime('%I:%M %p'))
 		# 
 
 		# print(self.weather_controller.astronomy_json['sunrise'])
@@ -78,14 +120,14 @@ class CircadianLightsController():
 		# print(time_utils.get_UTC().timestamp())
 
 
-	def tick(self, curr_time):
-		soonest_item = self.schedule.get_soonest_item()
-		if(curr_time - soonest_item.execution_time >= 0 and not soonest_item.executed):
+	def tick(self):
+		next_item = self.schedule.get_next_item()
+		if(time_utils.get_UTC_time() - next_item.execution_time >= 0 and not next_item.executed):
 			
-			if(soonest_item.action_type == CircadianActionTypes.GENERATE_SCHEDULE):
+			if(next_item.action_type == CircadianActionTypes.GENERATE_SCHEDULE):
 				generate_schedule()
 
-			if(soonest_item.action_type == CircadianActionTypes.UPDATE_LIGHTS):
-				update_lights(soonest_item.params)
+			if(next_item.action_type == CircadianActionTypes.UPDATE_LIGHTS):
+				update_lights(next_item.params)
 
 
