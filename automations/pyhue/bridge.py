@@ -31,4 +31,16 @@ class BridgeController():
 				self.lights[i] = light  
 
 
+	def update_light(self, **kwargs):
+		pass
+
+
+	def update_lights(self, **kwargs):
+		
+		action_type = kwargs['action_type']
+
+		if(action_type == LightActionType.ALL_LIGHTS_SET_BRIGHTNESS):
+			pass
+
+		if(action_type == LightActionType.ALL)
 
