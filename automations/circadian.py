@@ -1,10 +1,12 @@
 from automations.pyhue.bridge import BridgeController
-import automations.pyhue.color
+from automations.pyhue.color import Color
 
-import automations.constants
+from automations.constants import ColorType
+from automations.constants import LightActionType
 import automations.weather
 import automations.constants
 from automations.schedule import Schedule
+from automations.schedule import Item
 
 import utils.time_utilities as time_utils
 import datetime
@@ -24,7 +26,10 @@ second = 1
 minute = 60
 hour = 60*minute
 
-	
+# in XY
+red = (0.6882, 0.3108)
+blue = (0.1532, 0.0495) 
+
 class CircadianLightsController():
 	def __init__(self, master_controller):
 		
@@ -65,23 +70,23 @@ class CircadianLightsController():
 		self.post_sunset_mirek = 500
 		self.post_sunset_brightness = 70
 
-		self.night_color = Color(red=255, green=0, blue=0)
+		self.night_color = Color(ColorType.XY, x=red[0], y=red[1])
 		self.night_brightness = 60
 
-		self.first_sleep_indicator_color = Color(red=0, green=0, blue=255)
+		self.first_sleep_indicator_color = Color(ColorType.XY, x=blue[0], y=blue[1])
 		# in ms
 		self.first_sleep_indicator_flash_duration = 1 * second * milliseconds
 
 
-		self.second_sleep_indicator_color = Color(red=0, green=0, blue=255)
+		self.second_sleep_indicator_color = Color(ColorType.XY, x=blue[0], y=blue[1])
 		# in ms
 		self.second_sleep_indicator_flash_duration = 1 * second * milliseconds
 
 
-		self.third_sleep_indicator_color = Color(red=0, green=0, blue=255)
+		self.third_sleep_indicator_color = Color(ColorType.XY, x=blue[0], y=blue[1])
 		# in ms
 		self.third_sleep_indicator_flash_duration = 1 * second * milliseconds
-		self.lights_out_brightness = 1
+		self.lights_out_brightness = 30
 
 
 
@@ -161,9 +166,9 @@ class CircadianLightsController():
 		print('First sleep ind.: ' + (time_utils.UTC_timestamp_to_local_datetime(first_sleep_indicator_time)).strftime('%I:%M %p'))
 		print('Second sleep indc.: ' + (time_utils.UTC_timestamp_to_local_datetime(second_sleep_indicator_time)).strftime('%I:%M %p'))
 		print('Third sleep indc.: ' + (time_utils.UTC_timestamp_to_local_datetime(third_sleep_indicator_time)).strftime('%I:%M %p'))
-		print('Lights out: ' + (time_utils.UTC_timestamp_to_local_datetime(lights_out)).strftime('%I:%M %p'))
+		print('Lights out: ' + (time_utils.UTC_timestamp_to_local_datetime(lights_off_time)).strftime('%I:%M %p'))
 		
-		turn_on
+		turn_on = 4
 		turn_off = 3
 		# brightness assumed attribute
 		mirek_change = 0
@@ -171,17 +176,17 @@ class CircadianLightsController():
 		flash = 2
 
 
-		events = [{'name': 'sunrise', 'type': mirek_change, 'time': sunrise_time, 'mirek': sunrise_mirek, 'brightness': sunrise_brightness},
-				  {'name': 'post_sunrise', 'type': mirek_change, 'time': post_sunrise_time, 'mirek': post_sunrise_mirek, 'brightness': post_sunrise_brightness},
-				  {'name': 'early_morning', 'type': mirek_change, 'time': early_morning_time, 'mirek': early_morning_mirek, 'brightness': early_morning_brightness},
-				  {'name': 'midday', 'type': mirek_change, 'time': midday_time, 'mirek': midday_mirek, 'brightness': midday_brightness},
-				  {'name': 'mid_afternoon', 'type': mirek_change, 'time': mid_afternoon_time, 'mirek': mid_afternoon_mirek, 'brightness': mid_afternoon_brightness},
-				  {'name': 'sunset', 'type': mirek_change, 'time': sunset_time, 'mirek': sunset_mirek, 'brightness': sunset_brightness},
-				  {'name': 'post_sunset', 'type': mirek_change, 'time': post_sunset_time, 'mirek': post_sunset_mirek, 'brightness': post_sunset_brightness},
-				  {'name': 'nighttime', 'type': color_change, 'time': night_time, 'color': night_color, 'brightness': night_brightness},
-				  {'name': 'first_indicator', 'type': flash, 'time': first_sleep_indicator_time, 'color': first_sleep_indicator_color},
-				  {'name': 'second_inidactor', 'type': flash, 'time': second_sleep_indicator_time, 'color': second_sleep_indicator_color},
-				  {'name': 'third_indicator', 'type': flash, 'time': third_sleep_indicator_time, 'color': third_indicator_color},
+		events = [{'name': 'sunrise', 'type': mirek_change, 'time': sunrinse_time, 'mirek': self.sunrise_mirek, 'brightness': self.sunrise_brightness},
+				  {'name': 'post_sunrise', 'type': mirek_change, 'time': post_sunrise_time, 'mirek': self.post_sunrise_mirek, 'brightness': self.post_sunrise_brightness},
+				  {'name': 'early_morning', 'type': mirek_change, 'time': early_morning_time, 'mirek': self.early_morning_mirek, 'brightness': self.early_morning_brightness},
+				  {'name': 'midday', 'type': mirek_change, 'time': midday_time, 'mirek': self.midday_mirek, 'brightness': self.midday_brightness},
+				  {'name': 'mid_afternoon', 'type': mirek_change, 'time': mid_afternoon_time, 'mirek': self.mid_afternoon_mirek, 'brightness': self.mid_afternoon_brightness},
+				  {'name': 'sunset', 'type': mirek_change, 'time': sunset_time, 'mirek': self.sunset_mirek, 'brightness': self.sunset_brightness},
+				  {'name': 'post_sunset', 'type': mirek_change, 'time': post_sunset_time, 'mirek': self.post_sunset_mirek, 'brightness': self.post_sunset_brightness},
+				  {'name': 'nighttime', 'type': color_change, 'time': night_time, 'color': self.night_color, 'brightness': self.night_brightness},
+				  {'name': 'first_indicator', 'type': flash, 'time': first_sleep_indicator_time, 'color': self.first_sleep_indicator_color},
+				  {'name': 'second_inidactor', 'type': flash, 'time': second_sleep_indicator_time, 'color': self.second_sleep_indicator_color},
+				  {'name': 'third_indicator', 'type': flash, 'time': third_sleep_indicator_time, 'color': self.third_sleep_indicator_color},
 
 
 		]
@@ -189,7 +194,8 @@ class CircadianLightsController():
 		#### Build the schedule ####
 		
 		# Turn on the lights
-		self.light_schedule.add_item(Item(execution_time=lights_on_time, action_type=LightActionType.ALL_LIGHTS_TURN_ON))
+		self.light_schedule.add_item(Item(execution_time=lights_on_time, action_type=LightActionType.ALL_LIGHTS_TURN_ON, params=None))
+
 
 		curr_exec_time = 0
 		curr_mirek = 0
@@ -198,6 +204,9 @@ class CircadianLightsController():
 		# Fading mechanism between mirek change types
 		for i in range(0, len(events)-1):
 			curr_event = events[i]
+
+			if(curr_event['type'] != mirek_change):
+				continue
 			
 			curr_exec_time = curr_event['time']
 			curr_mirek = curr_event['mirek']
@@ -216,67 +225,73 @@ class CircadianLightsController():
 				brightness_delta = brightness_diff / num_updates
 				
 				## Populate the schedule
-				for i in range(0, num_updates);
-					params = {'color': Color(TEMPERATURE, curr_mirek)}
+				for i in range(0, int(num_updates)):
+					
+					params = {'color': Color(ColorType.TEMPERATURE, mirek=curr_mirek)}
+					self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_COLOR, params=params))
+					
 					params = {'brightness': curr_brightness}
-
-					self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE, params=params))
 					self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_BRIGHTNESS, params=params))
+
 
 					curr_exec_time += self.update_interval
 					curr_mirek += mirek_delta
-					curr_brightness ++ brightness_delta 
+					curr_brightness += brightness_delta 
 			
 
 		# Change to color (for nighttime)
-		# TODO this will put events in schedule out of order, so gotta add a sort function
 
-		params = {'color': night_color}
-		self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_BRIGHTNESS, params=params))
+		params = {'color': self.night_color}
+		self.light_schedule.add_item(Item(execution_time=night_time, action_type=LightActionType.ALL_LIGHTS_SET_COLOR, params=params))
+		
+		params = {'brightness': self.night_brightness}
+		self.light_schedule.add_item(Item(execution_time=night_time, action_type=LightActionType.ALL_LIGHTS_SET_BRIGHTNESS, params=params))
 
 		# Fade only brightness
 		# From nighttime to lights out
+
+		curr_exec_time = night_time
+		curr_brightness = self.night_brightness
+
 		time_diff = lights_off_time - night_time
+		brightness_diff = self.lights_out_brightness - self.night_brightness
 
 		num_updates = time_diff / self.update_interval
 
-		time_delta = time_diff / num_updates
+		brightness_delta = brightness_diff / num_updates
 
-		for i in range(0, num_updates):
-			params = {'mirek': curr_mirek}
+		for i in range(0, int(num_updates)):
 			params = {'brightness': curr_brightness}
 
-			self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE, params))
-			self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_BRIGHTNESS, params))
+			self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_BRIGHTNESS, params=params))
 
 			curr_exec_time += self.update_interval
-			curr_mirek += mirek_delta
-			curr_brightness ++ brightness_delta 
+			curr_brightness += brightness_delta 
 
 
 
 		# Add indicators (flash)
 		params = {'color': self.first_sleep_indicator_color}
-		self.light_schedule.add_item(Item(execution_time=self.first_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params))
+		self.light_schedule.add_item(Item(execution_time=first_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
 		params = {'color': self.second_sleep_indicator_color}
-		self.light_schedule.add_item(Item(execution_time=self.second_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params))
+		self.light_schedule.add_item(Item(execution_time=second_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
 		params = {'color': self.third_sleep_indicator_color}
-		self.light_schedule.add_item(Item(execution_time=self.third_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params))
+		self.light_schedule.add_item(Item(execution_time=third_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
 
 		# Add lights out
-		self.light_schedule.add_item(Item(execution_time=self.lights_off_time, action_type=LightActionType.ALL_LIGHTS_TURN_OFF))
+		self.light_schedule.add_item(Item(execution_time=lights_off_time, action_type=LightActionType.ALL_LIGHTS_TURN_OFF, params=None))
 
 
 
 
 
-
-
-
-
+	def tick(self):
+		next_item = self.light_schedule.get_next_item()
+		if(time_utils.get_UTC_time() - next_item.execution_time >= 0 and not next_item.executed):
+			self.master_controller.bridge_controller.update_lights(action_type=next_item.action_type, params=next_item.params)
 
 
 
@@ -406,10 +421,4 @@ class CircadianLightsController():
 		# print(self.sunrinse_time.timestamp())
 		# print(time_utils.get_UTC())
 		# print(time_utils.get_UTC().timestamp())
-
-
-	def tick(self):
-		next_item = self.light_schedule.get_next_item()
-		if(time_utils.get_UTC_time() - next_item.execution_time >= 0 and not next_item.executed):
-			self.master_controller.bridge_controller.update_lights(action_type=next_item.action_type, params=next_item.params)
 

@@ -22,9 +22,7 @@ class LightActionType(Enum):
 
 	ALL_LIGHTS_SET_BRIGHTNESS = uuid.uuid4()
 
-	ALL_LIGHTS_SET_COLOR_TEMPERATURE = uuid.uuid4()
-	ALL_LIGHTS_SET_COLOR_XY = uuid.uuid4()
-	ALL_LIGHTS_SET_COLOR_RGB = uuid.uuid4()
+	ALL_LIGHTS_SET_COLOR = uuid.uuid4()
 
 	ALL_LIGHTS_FLASH_COLOR = uuid.uuid4()
 

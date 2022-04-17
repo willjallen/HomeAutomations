@@ -1,4 +1,4 @@
-
+import utils.time_utilities as time_utils
 
 
 
@@ -16,12 +16,27 @@ class Item():
 
 		self.executed = False
 
+	def __str__(self):
+		if(self.params):
+			if('color' in self.params.keys() and 'original_color' in self.params.keys()):
+				return_str = 'time: ' + str(time_utils.UTC_timestamp_to_local_datetime(self.execution_time).strftime('%I:%M %p')) + '\n' +'action type: ' + str(self.action_type) + '\n' + 'params: ' + str(self.params['color'] + ', ' + str(self.params['original_color'])) 
+			elif('color' in self.params.keys()):
+				return_str = 'time: ' + str(time_utils.UTC_timestamp_to_local_datetime(self.execution_time).strftime('%I:%M %p')) + '\n' +'action type: ' + str(self.action_type) + '\n' + 'params: ' + str(self.params['color'])
+			elif('brightness' in self.params.keys()):
+				return_str = 'time: ' + str(time_utils.UTC_timestamp_to_local_datetime(self.execution_time).strftime('%I:%M %p')) + '\n' +'action type: ' + str(self.action_type) + '\n' + 'params: ' + str(self.params['brightness'])
+
+		else:
+			return_str = 'time: ' + str(time_utils.UTC_timestamp_to_local_datetime(self.execution_time).strftime('%I:%M %p')) + '\n' +'action type: ' + str(self.action_type) + '\n' + 'params: None'
+
+		return return_str
+
 class Schedule():
 	def __init__(self):
 		self.items = []
 
 	def add_item(self, item):
 		self.items.append(item)
+		self.items.sort(key=lambda x: x.execution_time)
 
 	def get_soonest_item(self, curr_time):
 		min_delta = sys.maxsize

@@ -1,5 +1,5 @@
 from automations.pyhue.bridge import BridgeController
-# from automations.circadian import CircadianLightsController
+from automations.circadian import CircadianLightsController
 from automations.weather import WeatherController
 import time
 from automations.pyhue.color import Color
@@ -13,17 +13,25 @@ class MasterController():
 	def __init__(self):
 		# self.schedule = None
 		self.weather_controller = WeatherController(self)
-		# self.circadian_lights_controller = CircadianLightsController(self)
+		self.circadian_lights_controller = CircadianLightsController(self)
 		self.bridge_controller = BridgeController(self)
-		# self.circadian_lights_controller.generate_schedule()
+		self.circadian_lights_controller.generate_schedule()
 		# self.main_loop()
+		f = open("schedule.txt", "a")
+	
+		for item in self.circadian_lights_controller.light_schedule.items:
+			f.write(str(item) + '\n\n')
+	
+		f.close()
 
-		for light in self.bridge_controller.lights:
+			# print(str(item))
+
+		# for light in self.bridge_controller.lights:
 			# light.setDuration(10000)
-			light.turn_on()
-			color = Color(ColorType.TEMPERATURE, mirek=200)
-			response = light.set_color(color)
-			light.set_brightness(100)
+			# light.turn_on()
+			# color = Color(ColorType.TEMPERATURE, mirek=200)
+			# response = light.set_color(color)
+			# light.set_brightness(100)
 
 		# 	print(response)lj
 

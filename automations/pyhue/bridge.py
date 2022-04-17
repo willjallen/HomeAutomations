@@ -36,23 +36,17 @@ class BridgeController():
 		pass
 
 
-	def update_lights(self, **kwargs):
+	def update_lights(self, action_type, params):
 		
-		action_type = kwargs['action_type']
-		params = kwargs['params']
-
-		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE):
-			mirek = params['mirek']
+		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR):
+			color = params['color']
 			for light in self.lights:
-				light.set_color({'color_temperature' : {'mirek' : mirek}})
+				light.set_color(color)
 
 		if(action_type == LightActionType.ALL_LIGHTS_SET_BRIGHTNESS):
 			brightness = params['brightness']
 			for light in self.lights:
 				light.set_brightness(brightness)
-
-		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR):
-			pass
 
 		if(action_type == LightActionType.ALL_LIGHTS_FLASH_COLOR):
 			original_color = params['original_color']
