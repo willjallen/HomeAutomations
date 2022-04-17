@@ -3,19 +3,20 @@ import json
 import automations.pyhue.patched_request as requests
 import environment as env
 from automations.pyhue.light import Light
+from automations import constants
 
 class BridgeController():
 	def __init__(self, master_controller):
 		self.master_controller = master_controller
 		self.lights = []
-		self.getLightData()
+		self.retrieve_lights_data()
 		
 
-	def getLights(self):
+	def get_lights(self):
 		return self.lights
 
 
-	def getLightData(self):
+	def retrieve_lights_data(self):
 
 		response = requests.get(url=env.url + '/light')
 		
@@ -38,9 +39,27 @@ class BridgeController():
 	def update_lights(self, **kwargs):
 		
 		action_type = kwargs['action_type']
+		params = kwargs['params']
+
+		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE):
+			mirek = params['mirek']
+			for light in self.lights:
+				light.set_color_temperature(mirek)
 
 		if(action_type == LightActionType.ALL_LIGHTS_SET_BRIGHTNESS):
+			brightness = params['brightness']
+			for light in self.lights:
+				light.set_brightness(brightness)
+
+		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR_XY):
 			pass
 
-		if(action_type == LightActionType.ALL)
+		if(action_type == LightActionType.ALL_LIGHTS_FLASH_COLOR):
+			pass
+
+
+
+
+		# if(action_type == LightActionType.ALL):
+		# 	pass
 
