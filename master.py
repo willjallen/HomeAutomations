@@ -4,7 +4,7 @@ from automations.weather import WeatherController
 import time
 from automations.pyhue.color import Color
 from automations.constants import ColorType
-
+import utils.time_utilities as time_utils
 class MasterController():
 	
 	# Maybe make this more complete later, right now I just need a timer
@@ -16,7 +16,14 @@ class MasterController():
 		self.circadian_lights_controller = CircadianLightsController(self)
 		self.bridge_controller = BridgeController(self)
 		self.circadian_lights_controller.generate_schedule()
-		# self.main_loop()
+		self.main_loop()
+		# red = (0.6882, 0.3108)
+		# blue = (0.1532, 0.0495) 
+		# orig = Color(ColorType.XY, x=red[0], y=red[1])
+		# new = Color(ColorType.XY, x=blue[0], y=blue[1])
+		# for light in self.bridge_controller.lights:
+		# 	light.flash_color(orig, new, 1000)
+		
 		f = open("schedule.txt", "a")
 	
 		for item in self.circadian_lights_controller.light_schedule.items:
@@ -37,7 +44,17 @@ class MasterController():
 
 
 	def main_loop(self):
-		self.circadian_lights.tick()
-		
-
+		curr_time = time_utils.get_UTC_time().timestamp()
+		midnight_tomorrow = time_utils.get_tomorrow_start_as_utc().timestamp()
+		print(time_utils.get_local_time())
+		print(time_utils.get_local_tomorrow_start())
+		print(time_utils.get_UTC_time())
+		print(time_utils.get_tomorrow_start_as_utc())
+		while(True):
+			curr_time = time_utils.get_UTC_time().timestamp()
+			if(curr_time < midnight_tomorrow):
+				self.circadian_lights_controller.tick(curr_time)
+			else:
+				self.circadian_lights_controller.generate_schedule()
+				midnight_tomorrow = time_utils.get_tomorrow_start().timestamp()
 master_controller = MasterController()

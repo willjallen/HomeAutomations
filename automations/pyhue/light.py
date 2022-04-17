@@ -75,8 +75,10 @@ class Light:
 
 	def send_data(self, payload):
 		payload.update(self.duration_payload)
-		print(payload)
+		# print(payload)
 		response = requests.put(url=self.url, json=payload)
+		print(response)
+		print(response.json()['errors'])
 		# self.retrieve_lights_data()
 		return response
 
