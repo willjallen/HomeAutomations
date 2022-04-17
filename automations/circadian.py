@@ -1,13 +1,14 @@
 from automations.pyhue.bridge import BridgeController
+import automations.pyhue.color
 
+import automations.constants
+import automations.weather
 import automations.constants
 from automations.schedule import Schedule
-import automations.weather
-import utils.time_utilities as time_utils
 
+import utils.time_utilities as time_utils
 import datetime
 
-import automations.constants
 
 # Every day at some time, find the sunset and sunrise time from an api, write it to a file
 # Then every 10 minutes send a request to the hue lights to fade colors
@@ -64,20 +65,20 @@ class CircadianLightsController():
 		self.post_sunset_mirek = 500
 		self.post_sunset_brightness = 70
 
-		self.night_color = {'r': 255, 'g': 0, 'b': 0}
+		self.night_color = Color(red=255, green=0, blue=0)
 		self.night_brightness = 60
 
-		self.first_sleep_indicator_color = {'r': 0, 'g': 0, 'b': 255}
+		self.first_sleep_indicator_color = Color(red=0, green=0, blue=255)
 		# in ms
 		self.first_sleep_indicator_flash_duration = 1 * second * milliseconds
 
 
-		self.second_sleep_indicator_color = {'r': 0, 'g': 0, 'b': 255}
+		self.second_sleep_indicator_color = Color(red=0, green=0, blue=255)
 		# in ms
 		self.second_sleep_indicator_flash_duration = 1 * second * milliseconds
 
 
-		self.third_sleep_indicator_color = {'r': 0, 'g': 0, 'b': 255}
+		self.third_sleep_indicator_color = Color(red=0, green=0, blue=255)
 		# in ms
 		self.third_sleep_indicator_flash_duration = 1 * second * milliseconds
 		self.lights_out_brightness = 1
@@ -106,12 +107,12 @@ class CircadianLightsController():
 	# Early morning
 	def generate_schedule(self):
 
-		# Update sunset and sunrise times 
 		local_time = time_utils.get_local_time()
 		YMD_str = str(local_time.year) + '-' + str(local_time.month) + '-' + str(local_time.day)
 
 		self.weather_controller.retrieve_astronomy()
 		
+		# Update sunset and sunrise times 
 		# In UTC seconds
 		sunrinse_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
 			self.weather_controller.astronomy_json['sunrise']).timestamp()
@@ -216,7 +217,7 @@ class CircadianLightsController():
 				
 				## Populate the schedule
 				for i in range(0, num_updates);
-					params = {'mirek': curr_mirek}
+					params = {'color': Color(TEMPERATURE, curr_mirek)}
 					params = {'brightness': curr_brightness}
 
 					self.light_schedule.add_item(Item(execution_time=curr_exec_time, action_type=LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE, params=params))

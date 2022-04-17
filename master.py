@@ -2,6 +2,8 @@ from automations.pyhue.bridge import BridgeController
 # from automations.circadian import CircadianLightsController
 from automations.weather import WeatherController
 import time
+from automations.pyhue.color import Color
+from automations.constants import ColorType
 
 class MasterController():
 	
@@ -19,10 +21,11 @@ class MasterController():
 		for light in self.bridge_controller.lights:
 			# light.setDuration(10000)
 			light.turn_on()
-			response = light.set_color_temperature(100)
+			color = Color(ColorType.TEMPERATURE, mirek=200)
+			response = light.set_color(color)
 			light.set_brightness(100)
 
-		# 	print(response)
+		# 	print(response)lj
 
 
 	def main_loop(self):

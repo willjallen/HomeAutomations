@@ -44,18 +44,22 @@ class BridgeController():
 		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR_TEMPERATURE):
 			mirek = params['mirek']
 			for light in self.lights:
-				light.set_color_temperature(mirek)
+				light.set_color({'color_temperature' : {'mirek' : mirek}})
 
 		if(action_type == LightActionType.ALL_LIGHTS_SET_BRIGHTNESS):
 			brightness = params['brightness']
 			for light in self.lights:
 				light.set_brightness(brightness)
 
-		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR_XY):
+		if(action_type == LightActionType.ALL_LIGHTS_SET_COLOR):
 			pass
 
 		if(action_type == LightActionType.ALL_LIGHTS_FLASH_COLOR):
-			pass
+			original_color = params['original_color']
+			color = params['color']
+			duration = params['duration']
+			for light in self.lights:
+				light.flash_color(original_color, color, duration)
 
 
 

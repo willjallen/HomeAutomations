@@ -9,9 +9,8 @@ class Item():
 	# automation_type: 
 	# action_type: which action the controller will take
 	# params: dictionary enumerated parameters for action
-	def __init__(self, execution_time, automation_type, action_type, params):
+	def __init__(self, execution_time, action_type, params):
 		self.execution_time = execution_time
-		self.automation_type = automation_type
 		self.action_type = action_type
 		self.params = params
 

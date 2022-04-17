@@ -1,6 +1,9 @@
 import json
 import automations.pyhue.patched_request as requests
+import automations.pyhue.color
+from automations.constants import ColorType
 import environment as env
+
 
 class Light:
 	def __init__(self, bridge, data):
@@ -34,31 +37,36 @@ class Light:
 	def get_ID(self):
 		return self.data['id']
 
-	# [153, 500], 500 is more red, 153 more blue
-	def set_color_temperature(self, temp):
-		payload = {'color_temperature': {'mirek': temp}}
-		return self.send_data(payload)
+	# mirek: [153, 500], 500 is more red, 153 more blue
+	def set_color(self, color):
+		if(color.color_type == ColorType.TEMPERATURE):
+			payload = {'color_temperature': {'mirek': color.mirek}}
 
-	def set_color_xy(self, x, y):
-		payload = {'color': {'xy' : {'x': x, 'y': y}}}
-		return self.send_data(payload)
+		if(color.color_type == ColorType.XY):
+			payload = {'color': {'xy' : {'x': color.x, 'y': color.y}}}
 
-	def set_color_gamut(self, r_x, r_y, g_x, g_y, b_x, b_y):
-		payload = {'gamut' : 
-			{	
-				{'red' : {'x' : r_x, 'y': r_y}},
-				{'green' : {'x': g_x, 'y': g_y}},
-				{'blue' : {'x' : b_x, 'y' : b_y}}
+		if(color.color_type == ColorType.GAMUT_RGB_XY):
+			payload = {'gamut' : 
+				{	
+					{'red' : {'x' : color.r_x, 'y': color.r_y}},
+					{'green' : {'x': color.g_x, 'y': color.g_y}},
+					{'blue' : {'x' : color.b_x, 'y' : color.b_y}}
+				}
 			}
-		}
+				
+		return self.send_data(payload)
 
 	# Note: this state is appended to every request
 	# maximum: 6000000ms
 	def set_duration(self, duration):
 		self.duration_payload = {'dynamics' : {'duration' : duration}}
 
-	def flash_color(self, flash_durection, color):
-		pass
+	def flash_color(self, original_color, color, duration):
+		self.set_duration(0)	
+		self.set_color(color)
+		self.set_duration(duration)
+		self.set_color(original_color)
+		self.set_duration(0)
 
 
 	def get_data(self):

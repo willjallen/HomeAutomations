@@ -13,7 +13,7 @@ def convert_local_time_hm_to_UTC(localtime):
 def get_local_time():
 	return datetime.now(pytz.timezone(env.time_zone))
 
-def get_UTC():
+def get_UTC_time():
 	return datetime.now(pytz.utc)
 
 def get_midnight_today_UTC():

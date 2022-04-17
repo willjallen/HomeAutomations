@@ -6,6 +6,12 @@ class ActionType(Enum):
 	BLINDS = uuid.uuid4()
 	CIRCADIAN = uuid.uuid4()
 
+class ColorType(Enum):
+	TEMPERATURE = uuid.uuid4()
+	XY = uuid.uuid4()
+	GAMUT_RGB_XY = uuid.uuid4()
+	RGB = uuid.uuid4()
+
 class CircadianActionType(Enum):
 	GENERATE_SCHEDULE = uuid.uuid4()
 
@@ -28,3 +34,4 @@ class LightActionType(Enum):
 
 class BlindActionType(Enum):
 	something = 354354
+
