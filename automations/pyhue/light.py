@@ -20,7 +20,8 @@ class Light:
 
 	def turn_off(self):
 		payload = {'on' : {'on' : False}}
-
+		return self.send_data(payload)
+		
 	def get_on_off_state(self):
 		return self.data['on']['on']
 

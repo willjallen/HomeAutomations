@@ -16,7 +16,6 @@ class MasterController():
 		self.circadian_lights_controller = CircadianLightsController(self)
 		self.bridge_controller = BridgeController(self)
 		self.circadian_lights_controller.generate_schedule()
-		self.main_loop()
 		# red = (0.6882, 0.3108)
 		# blue = (0.1532, 0.0495) 
 		# orig = Color(ColorType.XY, x=red[0], y=red[1])
@@ -31,6 +30,7 @@ class MasterController():
 	
 		f.close()
 
+		self.main_loop()
 			# print(str(item))
 
 		# for light in self.bridge_controller.lights:
@@ -56,5 +56,13 @@ class MasterController():
 				self.circadian_lights_controller.tick(curr_time)
 			else:
 				self.circadian_lights_controller.generate_schedule()
-				midnight_tomorrow = time_utils.get_tomorrow_start().timestamp()
+				midnight_tomorrow = time_utils.get_tomorrow_start_as_utc().timestamp()
 master_controller = MasterController()
+
+
+
+
+
+
+
+

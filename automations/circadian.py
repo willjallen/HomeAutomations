@@ -274,13 +274,13 @@ class CircadianLightsController():
 
 
 		# Add indicators (flash)
-		params = {'original_color': self.night_color, 'color': self.first_sleep_indicator_color, 'duration': 100}
+		params = {'original_color': self.night_color, 'color': self.first_sleep_indicator_color, 'duration': 1000}
 		self.light_schedule.add_item(Item(execution_time=first_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
-		params = {'original_color': self.night_color, 'color': self.second_sleep_indicator_color, 'duration': 100}
+		params = {'original_color': self.night_color, 'color': self.second_sleep_indicator_color, 'duration': 1000}
 		self.light_schedule.add_item(Item(execution_time=second_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
-		params = {'original_color': self.night_color, 'color': self.third_sleep_indicator_color, 'duration': 100}
+		params = {'original_color': self.night_color, 'color': self.third_sleep_indicator_color, 'duration': 1000}
 		self.light_schedule.add_item(Item(execution_time=third_sleep_indicator_time, action_type=LightActionType.ALL_LIGHTS_FLASH_COLOR, params=params))
 
 

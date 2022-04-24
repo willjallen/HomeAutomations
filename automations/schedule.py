@@ -37,7 +37,7 @@ class Schedule():
 
 	def add_item(self, item):
 		if(item.execution_time >= self.build_time):
-			print(str(time_utils.UTC_timestamp_to_local_datetime(item.execution_time).strftime('%I:%M %p')))
+			# print(str(time_utils.UTC_timestamp_to_local_datetime(item.execution_time).strftime('%I:%M %p')))
 			self.items.append(item)
 			self.items.sort(key=lambda x: x.execution_time)
 
