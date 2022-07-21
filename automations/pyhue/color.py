@@ -103,6 +103,7 @@ class Color():
 			if(isInside(gamut_r_point, gamut_g_point, gamut_b_point, Point(x, y))):
 				self.x = x
 				self.y = y
+				self.color_type = ColorType.XY
 			else:
 				print('Color is outside gamut triangle')
 				print('rgb: ' + str(red) + ',' + str(green) + ',' + str(blue))

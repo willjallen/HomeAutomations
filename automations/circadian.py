@@ -42,6 +42,9 @@ class CircadianLightsController():
 		# Schedule
 		self.light_schedule = Schedule()
 
+		# Sunrise is at 6:30 AM, but I want to wake up at 8:30 AM
+		# in hours
+		self.sunrise_delay = 1
 
 		self.update_interval = 1 * minute 
 
@@ -91,8 +94,8 @@ class CircadianLightsController():
 
 
 	def update_lights(self, **kwargs):
-		
-		self.master_controller.bridge_controller.set
+	
+			self.master_controller.bridge_controller.set
 
 	# Generate a set of commands to fade the lights according to the sunset and sunrise times
 	#https://brandon-lighting.com/wp-content/uploads/2018/04/Color-Temperature.jpg
@@ -119,9 +122,12 @@ class CircadianLightsController():
 		
 		# Update sunset and sunrise times 
 		# In UTC seconds
-		sunrinse_time = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
+		sunrise_time_without_delay = time_utils.convert_local_time_hm_to_UTC(YMD_str + ' '  + 
 			self.weather_controller.astronomy_json['sunrise']).timestamp()
+
+		sunrinse_time = sunrise_time_without_delay + (self.sunrise_delay * hour)
 		
+
 		lights_on_time = sunrinse_time - (5 * second)
 
 		# In UTC seconds
@@ -140,7 +146,7 @@ class CircadianLightsController():
 
 		mid_afternoon_time = midday_time + (sunset_time - midday_time)/2
 
-		post_sunset_time = sunset_time + (minute * 30)
+		post_sunset_time = sunset_time + (minute * 60)
 
 		# tomorrow's sunrise (today's sunrise + 24 hour)
 		# - sleep_time hour - 45 min
@@ -155,7 +161,9 @@ class CircadianLightsController():
 
 		lights_off_time = third_sleep_indicator_time + (5 * minute)
 
-		print('Sunrise: ' + (time_utils.UTC_timestamp_to_local_datetime(sunrinse_time)).strftime('%I:%M %p'))
+		print('Sunrise: ' + (time_utils.UTC_timestamp_to_local_datetime(sunrise_time_without_delay)).strftime('%I:%M %p'))
+		print('Delay: ' + str(self.sunrise_delay) + ' h')
+		print('Sunrise (With Delay): ' + (time_utils.UTC_timestamp_to_local_datetime(sunrinse_time)).strftime('%I:%M %p'))
 		print('Post sunrise: ' + (time_utils.UTC_timestamp_to_local_datetime(post_sunrise_time)).strftime('%I:%M %p'))
 		print('Early morning: ' + (time_utils.UTC_timestamp_to_local_datetime(early_morning_time)).strftime('%I:%M %p'))
 		print('Mid day: ' + (time_utils.UTC_timestamp_to_local_datetime(midday_time)).strftime('%I:%M %p'))
@@ -295,7 +303,7 @@ class CircadianLightsController():
 		if(len(self.light_schedule.items) != 0):
 			item = self.light_schedule.get_next_item()
 			if(curr_time - item.execution_time >= 0 and not item.executed):
-				print('Executing item: ' + str(item))
+				# print('Executing item: ' + str(item))
 				self.master_controller.bridge_controller.update_lights(action_type=item.action_type, params=item.params)
 				self.light_schedule.remove_item(item)
 

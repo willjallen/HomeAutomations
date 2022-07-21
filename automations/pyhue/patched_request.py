@@ -5,13 +5,20 @@ import json
 from urllib3.util import connection
 from urllib3.util import ssl_match_hostname
 
+from utils.bridge_utils import BRIDGE_IP
+
 import warnings
 
 _orig_create_connection = connection.create_connection
 
+# TODO the ip will change over time and break this
+# implement this https://discovery.meethue.com/	
 def custom_resolver(host):
 	if host == env.hue_bridge_id:
-		return '192.168.0.44'
+		if(BRIDGE_IP != -1):
+			return BRIDGE_IP
+		else:
+			raise ValueError('Hue Bridge IP not found')
 	else:
 		return host
 

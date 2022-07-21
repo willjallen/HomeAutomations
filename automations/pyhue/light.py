@@ -21,7 +21,7 @@ class Light:
 	def turn_off(self):
 		payload = {'on' : {'on' : False}}
 		return self.send_data(payload)
-		
+
 	def get_on_off_state(self):
 		return self.data['on']['on']
 
@@ -76,10 +76,9 @@ class Light:
 
 	def send_data(self, payload):
 		payload.update(self.duration_payload)
-		# print(payload)
 		response = requests.put(url=self.url, json=payload)
-		print(response)
-		print(response.json()['errors'])
+		if(response.json()['errors']):
+			print(response.json()['errors'])
 		# self.retrieve_lights_data()
 		return response
 
