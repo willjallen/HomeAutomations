@@ -3,6 +3,21 @@ from textual.reactive import Reactive
 from textual.widgets import Footer, Placeholder
 
 
+class InterfaceController():
+    def __init__(self, master_controller) -> None:
+        self.master_controller = master_controller
+        self.running = True
+
+    def run(self):
+        while self.running:
+            print('E to exit')
+            response = input()
+            if(response == 'E'):
+                self.running = False
+                self.master_controller.running = False
+
+
+ 
 class SmoothApp(App):
     """Demonstrates smooth animation. Press 'b' to see it in action."""
 

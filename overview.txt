@@ -1,0 +1,20 @@
+== Overview ==
+
+The schedule object will be synchronous and have a structure to store meta info like build times and stuff
+The schedule queue will be asynchrounous and thread safe, it'll be modified from the automations thread and the interactive thread
+
+== REPL Thread ==
+Handle input (Turn off light right now or in the 30 minutes)
+Add commands to schedule
+
+== Automations thread ==
+Autonomous stuff like circadian schedule gen, later blinds and other pre-defined schedules
+	** Schedule ** (Asyncronous list)
+		- List of all the events that should happen 
+		- Events that are past due(need to be executed) are added to execution queue
+	** Execution queue **
+		
+	Loop:
+	- Do all the autonomous stuff
+	
+

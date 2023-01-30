@@ -21,5 +21,6 @@ def get_bridge_ip():
 	else:
 		return -1
 
-
-BRIDGE_IP = get_bridge_ip()
+# TODO: this is so dumb. Fix this.
+BRIDGE_IP = '192.168.1.31' 
+print(BRIDGE_IP)

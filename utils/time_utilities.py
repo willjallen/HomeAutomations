@@ -45,4 +45,10 @@ def UTC_timestamp_to_local_datetime(timestamp):
 	tz = pytz.timezone(env.time_zone)
 	return datetime.fromtimestamp(timestamp, tz)
 
+def is_midnight():
+	dt_now = get_local_time()
+	if(dt_now.hour == 0 and dt_now.minute == 0):
+		return True
+	else: return False
+
 # utc_dt.strftime("%Y-%m-%d %H:%M:%S")
