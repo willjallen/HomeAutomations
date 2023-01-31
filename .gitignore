@@ -5,3 +5,4 @@ __pycache__/
 *.sublime-project
 schedule.txt
 *.sublime-workspace
+crash.txt

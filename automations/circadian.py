@@ -44,7 +44,7 @@ class CircadianLightsController():
 
 		# Sunrise is at 6:30 AM, but I want to wake up at 8:30 AM
 		# in hours
-		self.sunrise_delay = 1
+		self.sunrise_delay = 0
 
 		self.update_interval = 1 * minute 
 

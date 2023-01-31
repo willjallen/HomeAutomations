@@ -80,7 +80,7 @@ class MasterController():
             else:
                 self.circadian_lights_controller.generate_schedule()
                 midnight_tomorrow = time_utils.get_tomorrow_start_as_utc().timestamp()
-
+            time.sleep(10)
 
 
 
